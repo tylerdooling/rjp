@@ -53,7 +53,7 @@ $ curl https://api.github.com | rjp -k not_present -d default_value
 ```
 ### Post processing
 ```bash
-$ curl https://api.github.com | rjp -k current_user_url -e 'value.upscase'
+$ curl https://api.github.com | rjp -k current_user_url -e 'value.upcase'
 "HTTPS://API.GITHUB.COM/USER"
 ```
 

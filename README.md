@@ -1,5 +1,5 @@
+[![Build Status](https://travis-ci.org/tylerdooling/rjp.png?branch=master)](https://travis-ci.org/tylerdooling/rjp)
 # rjp
-
 A command line tool for formatting JSON and extracting values.
 
 ## Installation

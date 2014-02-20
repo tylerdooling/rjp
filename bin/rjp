@@ -1,0 +1,50 @@
+#!/usr/bin/env ruby
+require 'optparse'
+require 'ostruct'
+require 'ap'
+require 'rjp'
+
+opts = OpenStruct.new(
+  keys: [],
+  default_value: nil,
+  post_processor: ->(value){ value }
+)
+option_parser = OptionParser.new do |options|
+  options.set_banner "Usage: rjp [options] [key/s] [file]\n" \
+    "Parse json to a ruby hash for data access."
+
+  options.separator ""
+  options.separator "Specific options:"
+
+  options.on("-k", "--keys x,y,z", Array, "Keys to fetch from document") do |keys|
+    opts.keys = keys
+  end
+
+  options.on("-d", "--default key", "Default value if key is missing.") do |default|
+    opts.default_value = default
+  end
+
+  options.on("-e", "--eval expression", "Code to evaluate using value or document.") do |code|
+    opts.post_processor = eval "->(value){ #{code} }"
+  end
+
+  options.on_tail("-h", "--help", "You're looking at it!") do
+    $stderr.puts options
+    exit 1
+  end
+end
+option_parser.parse!
+
+input = ARGF.read
+parser = Rjp.new input
+
+output = if !opts.keys.empty?
+           if opts.default_value.nil?
+             parser.extract(*opts.keys)
+           else
+             parser.extract(*opts.keys) { opts.default_value }
+           end
+         else
+           parser.to_h
+         end
+ap opts.post_processor.call(output)

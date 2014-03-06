@@ -17,8 +17,13 @@ describe Rjp do
     end
 
     it "returns a value for an index" do
+      rjp = Rjp.new level2
+      expect(rjp.extract('0', 'level3a')).to eq("level3a_value")
+    end
+
+    it "returns a value for an index" do
       rjp = Rjp.new '[ "zero", "one"]'
-      expect(rjp.extract(0)).to eq('zero')
+      expect(rjp.extract('0')).to eq('zero')
     end
 
     it "returns a value for a list of nested keys or indecies" do

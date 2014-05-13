@@ -1,4 +1,4 @@
-require 'rspec'
+require 'spec_helper'
 require 'rjp'
 
 describe 'rjp' do

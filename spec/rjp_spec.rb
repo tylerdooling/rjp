@@ -5,20 +5,8 @@ describe 'rjp' do
   let(:json_string) { %({"level1": #{level1}}) }
   let(:level1) { %({ "level2" : #{level2} }) }
   let(:level2) { %([ { "level3a": "level3a_value" }, { "level3b": "level3b_value" } ]) }
-  let(:rjp) { File.expand_path(File.join('..', '..', 'bin', 'rjp'), __FILE__) }
-
-  it "accepts stdin" do
-    expect(`echo '{ "key": "value" }' | #{rjp} -k key`).to eq(%("value"\n))
-  end
-
-  it "accepts file list" do
-    `echo '{ "key": "value" }' > /tmp/rjp_json_test`
-    expect(`#{rjp} -k key /tmp/rjp_json_test`).to eq(%("value"\n))
-    `rm /tmp/rjp_json_test`
-  end
-
-  it "outputs formated a hash to stdout" do
-    str=<<-hash
+  let(:output) {
+    <<-hash
 {
     "level1" => {
         "level2" => [
@@ -32,7 +20,21 @@ describe 'rjp' do
     }
 }
     hash
-    expect(`echo '#{json_string}' | #{rjp}`).to eq(str)
+  }
+  let(:rjp) { File.expand_path(File.join('..', '..', 'bin', 'rjp'), __FILE__) }
+
+  it "accepts stdin" do
+    expect(`echo '{ "key": "value" }' | #{rjp} -k key`).to eq(%("value"\n))
+  end
+
+  it "accepts file list" do
+    `echo '{ "key": "value" }' > /tmp/rjp_json_test`
+    expect(`#{rjp} -k key /tmp/rjp_json_test`).to eq(%("value"\n))
+    `rm /tmp/rjp_json_test`
+  end
+
+  it "outputs formated a hash to stdout" do
+    expect(`echo '#{json_string}' | #{rjp}`).to eq(output)
   end
 
   context "when --keys are provided" do
@@ -53,6 +55,16 @@ describe 'rjp' do
           expect(`echo '#{json_string}' | #{rjp} --keys something --default default`).to eq(%("default"\n))
         end
       end
+    end
+  end
+
+  context 'when --eval is provided' do
+    it 'returns the result of the block' do
+      expect(`echo '#{json_string}' | #{rjp} -e "'yolo'"`).to eq(%("yolo"\n))
+    end
+
+    it 'passed the output as an argument' do
+      expect(`echo '#{json_string}' | #{rjp} -e "output"`).to eq(output)
     end
   end
 end

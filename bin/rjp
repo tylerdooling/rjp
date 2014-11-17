@@ -24,8 +24,12 @@ option_parser = OptionParser.new do |options|
     opts.default_value = default
   end
 
-  options.on("-e", "--eval expression", "Code to evaluate using value or document.") do |code|
-    opts.post_processor = eval "->(value){ #{code} }"
+  options.on(
+    "-e",
+    "--eval expression",
+    "Block body for output argument. ->(output){ <provided expression> } "
+  ) do |code|
+    opts.post_processor = eval "->(output){ #{code} }"
   end
 
   options.on_tail("-h", "--help", "You're looking at it!") do
